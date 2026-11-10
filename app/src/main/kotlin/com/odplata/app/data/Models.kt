@@ -8,8 +8,8 @@ import com.odplata.engine.SetObs
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-enum class Goal(val he: String) { MUSCLE("מסת שריר"), STRENGTH("כוח"), TONE("חיטוב") }
-enum class Experience(val he: String) { NEW("מתחיל"), MID("שנה–שלוש"), VETERAN("ותיק") }
+enum class Goal(val label: String) { MUSCLE("Muscle"), STRENGTH("Strength"), TONE("Toning") }
+enum class Experience(val label: String) { NEW("Beginner"), MID("1–3 years"), VETERAN("Veteran") }
 
 @Serializable
 data class Profile(
@@ -23,9 +23,9 @@ data class Profile(
     val restSec: Int = 90,
 )
 
-enum class Equip(val he: String) {
-    BARBELL("מוט"), DUMBBELL("משקולות יד"), MACHINE("מכונה"), CABLE("כבל"), SMITH("סמית׳"),
-    EZ_BAR("מוט EZ"), KETTLEBELL("קטלבל"), BODY("משקל גוף"), BAND("גומייה"), OTHER("אחר");
+enum class Equip(val label: String) {
+    BARBELL("Barbell"), DUMBBELL("Dumbbells"), MACHINE("Machine"), CABLE("Cable"), SMITH("Smith machine"),
+    EZ_BAR("EZ bar"), KETTLEBELL("Kettlebell"), BODY("Bodyweight"), BAND("Band"), OTHER("Other");
 
     /** Loads that exist by default on this kind of equipment. Editable per exercise. */
     fun defaultGrid(bodyWeight: Double): LoadGrid = when (this) {
@@ -45,15 +45,15 @@ enum class Equip(val he: String) {
     val perHand get() = this == DUMBBELL || this == KETTLEBELL
 }
 
-enum class MuscleGroup(val he: String, val muscles: Set<String>) {
-    CHEST("חזה", setOf("chest")),
-    BACK("גב", setOf("lats", "middle back", "lower back", "traps", "neck")),
-    SHOULDERS("כתפיים", setOf("shoulders")),
-    BICEPS("יד קדמית", setOf("biceps")),
-    TRICEPS("יד אחורית", setOf("triceps")),
-    LEGS("רגליים", setOf("quadriceps", "hamstrings", "glutes", "calves", "adductors", "abductors")),
-    ABS("בטן", setOf("abdominals")),
-    FOREARMS("אמות", setOf("forearms"));
+enum class MuscleGroup(val label: String, val muscles: Set<String>) {
+    CHEST("Chest", setOf("chest")),
+    BACK("Back", setOf("lats", "middle back", "lower back", "traps", "neck")),
+    SHOULDERS("Shoulders", setOf("shoulders")),
+    BICEPS("Biceps", setOf("biceps")),
+    TRICEPS("Triceps", setOf("triceps")),
+    LEGS("Legs", setOf("quadriceps", "hamstrings", "glutes", "calves", "adductors", "abductors")),
+    ABS("Abs", setOf("abdominals")),
+    FOREARMS("Forearms", setOf("forearms"));
 
     companion object {
         fun of(muscle: String): MuscleGroup = entries.first { muscle in it.muscles }
@@ -64,7 +64,7 @@ enum class MuscleGroup(val he: String, val muscles: Set<String>) {
 data class ExerciseDef(
     val id: String,
     val en: String,
-    val he: String? = null,
+    val common: Boolean = false,
     val equip: Equip,
     val primary: List<String>,
     val secondary: List<String> = emptyList(),
@@ -73,7 +73,7 @@ data class ExerciseDef(
     val steps: List<String> = emptyList(),
     val custom: Boolean = false,
 ) {
-    val name get() = he ?: en
+    val name get() = en
     val group get() = MuscleGroup.of(primary.first())
 }
 

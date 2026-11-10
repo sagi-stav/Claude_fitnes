@@ -90,18 +90,18 @@ class AppLogic(
 
     fun exercise(id: String): ExerciseDef =
         byId[id] ?: data.custom.firstOrNull { it.id == id }
-        ?: ExerciseDef(id, "תרגיל שנמחק", equip = Equip.OTHER, primary = listOf("chest"))
+        ?: ExerciseDef(id, "Deleted exercise", equip = Equip.OTHER, primary = listOf("chest"))
 
     fun exercises(group: MuscleGroup): List<ExerciseDef> = (data.custom + catalog).filter { it.group == group }
 
     fun search(query: String): List<ExerciseDef> {
         val q = query.trim().lowercase()
         if (q.length < 2) return emptyList()
-        return (data.custom + catalog).filter { q in it.en.lowercase() || (it.he?.contains(q) == true) }
+        return (data.custom + catalog).filter { q in it.en.lowercase() }
     }
 
     fun addCustom(name: String, equip: Equip, group: MuscleGroup): ExerciseDef {
-        val def = ExerciseDef("custom-" + UUID.randomUUID(), name, name, equip, listOf(group.muscles.first()), custom = true)
+        val def = ExerciseDef("custom-" + UUID.randomUUID(), name, true, equip, listOf(group.muscles.first()), custom = true)
         update { it.copy(custom = it.custom + def) }
         return def
     }
@@ -127,7 +127,7 @@ class AppLogic(
     fun workout(id: String) = data.workouts.firstOrNull { it.id == id }
 
     fun newWorkout() {
-        val w = Workout(UUID.randomUUID().toString(), "אימון " + "ABCDEFGH".getOrElse(data.workouts.size) { 'X' })
+        val w = Workout(UUID.randomUUID().toString(), "Workout " + "ABCDEFGH".getOrElse(data.workouts.size) { 'X' })
         update { it.copy(workouts = it.workouts + w) }
         go(Screen.Editor(w.id))
     }

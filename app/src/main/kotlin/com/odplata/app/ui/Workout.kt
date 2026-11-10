@@ -50,11 +50,11 @@ fun WorkoutScreen(app: AppLogic) {
     }
 
     IronScreen {
-        TopBar(active.name, "תרגיל ${active.index + 1} מתוך ${active.exercises.size}") {
+        TopBar(active.name, "Exercise ${active.index + 1} of ${active.exercises.size}") {
             if (confirmEnd) {
-                TextLink("לסיים ולשמור", color = Iron.Signal) { app.finish() }
-                TextLink("לא") { confirmEnd = false }
-            } else TextLink("סיום") { confirmEnd = true }
+                TextLink("Finish and save", color = Iron.Signal) { app.finish() }
+                TextLink("No") { confirmEnd = false }
+            } else TextLink("Finish") { confirmEnd = true }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             active.exercises.forEachIndexed { i, e ->
@@ -64,7 +64,7 @@ fun WorkoutScreen(app: AppLogic) {
                     e.done.isNotEmpty() -> Iron.Yellow
                     else -> Iron.Line
                 }
-                Canvas(Modifier.weight(1f).height(18.dp).clickable(role = Role.Button, onClickLabel = "עבור לתרגיל ${i + 1}") { app.jumpTo(i) }) {
+                Canvas(Modifier.weight(1f).height(18.dp).clickable(role = Role.Button, onClickLabel = "Go to exercise ${i + 1}") { app.jumpTo(i) }) {
                     drawRoundRect(color, Offset(0f, 6.dp.toPx()), Size(size.width, 6.dp.toPx()), CornerRadius(3.dp.toPx()))
                 }
             }
@@ -87,11 +87,11 @@ private fun discColor(def: ExerciseDef, weight: Double, bar: Double): Color = wh
 private fun loadLine(def: ExerciseDef, weight: Double, bar: Double): String = when {
     def.equip.plateLoaded -> {
         val plates = platesPerSide(weight, bar)
-        if (plates.isEmpty()) "מוט ריק, ${kg(bar)} ק״ג" else plates.joinToString(" + ") { kg(it) } + " בכל צד · מוט ${kg(bar)}"
+        if (plates.isEmpty()) "Empty bar, ${kg(bar)} kg" else plates.joinToString(" + ") { kg(it) } + " per side · bar ${kg(bar)}"
     }
-    def.equip.perHand -> "${kg(weight)} ק״ג בכל יד"
-    def.equip == Equip.BODY -> "משקל גוף"
-    else -> def.equip.he
+    def.equip.perHand -> "${kg(weight)} kg in each hand"
+    def.equip == Equip.BODY -> "Bodyweight"
+    else -> def.equip.label
 }
 
 @Composable
@@ -109,7 +109,7 @@ private fun ColumnScope.Lift(app: AppLogic, cur: ActiveExercise, def: ExerciseDe
             ExerciseMark(def)
             Column(Modifier.weight(1f)) {
                 Text(def.name, style = Type.Strong, maxLines = 2)
-                Text("סט ${cur.done.size + 1} מתוך ${cur.sets} · יעד ${ltr("${cur.repLo}–${cur.repHi}")}", color = Iron.Muted, style = Type.Small)
+                Text("Set ${cur.done.size + 1} of ${cur.sets} · target ${cur.repLo}–${cur.repHi}", color = Iron.Muted, style = Type.Small)
             }
         }
     }
@@ -117,13 +117,13 @@ private fun ColumnScope.Lift(app: AppLogic, cur: ActiveExercise, def: ExerciseDe
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         if (!body) Column(verticalArrangement = Arrangement.spacedBy(10.dp)) { Key("+") { move(1) }; Key("−") { move(-1) } } else Spacer(Modifier.width(52.dp))
         PlateDisc(
-            center = if (body) "גוף" else kg(weight), unit = if (body) "" else "ק״ג",
+            center = if (body) "BW" else kg(weight), unit = if (body) "" else "kg",
             color = discColor(def, weight, grid.min),
             rim = if (def.equip.plateLoaded) platesPerSide(weight, grid.min).firstOrNull()?.let(::kg) else null,
-            size = 204.dp, describe = if (body) "משקל גוף" else "${kg(weight)} קילוגרם",
+            size = 204.dp, describe = if (body) "Bodyweight" else "${kg(weight)} kilograms",
         )
         if (!body) Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Key(ltr("+" + kg(grid.step * 4))) { move(4) }; Key(ltr("−" + kg(grid.step * 4))) { move(-4) }
+            Key("+" + kg(grid.step * 4)) { move(4) }; Key("−" + kg(grid.step * 4)) { move(-4) }
         } else Spacer(Modifier.width(52.dp))
     }
     Text(loadLine(def, weight, grid.min), Modifier.fillMaxWidth(), color = Iron.Muted, style = Type.Small, textAlign = TextAlign.Center)
@@ -131,45 +131,45 @@ private fun ColumnScope.Lift(app: AppLogic, cur: ActiveExercise, def: ExerciseDe
     Well {
         Text(verdict(decision, def), style = Type.Strong, color = Iron.Signal)
         Text(reasonText(decision.reason, cur.repLo, decision.repsToUnlock), style = Type.Small)
-        if (last != null && cur.done.isEmpty()) Text("פעם שעברה: " + last.joinToString("  ") { ltr("${kg(it.weight)}×${it.reps}") }, color = Iron.Muted, style = Type.Small)
+        if (last != null && cur.done.isEmpty()) Text("Last time: " + last.joinToString("  ") { "${kg(it.weight)}×${it.reps}" }, color = Iron.Muted, style = Type.Small)
     }
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Key("−") { reps = maxOf(0, reps - 1) }
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(reps.toString(), style = Type.Title.copy(fontSize = 52.sp, lineHeight = 48.sp))
-            Text("חזרות", Modifier.padding(bottom = 6.dp), color = Iron.Muted)
+            Text("reps", Modifier.padding(bottom = 6.dp), color = Iron.Muted)
         }
         Key("+") { reps = minOf(50, reps + 1) }
     }
-    SteelButton("סיימתי סט") { app.setDone(weight, reps) }
+    SteelButton("Set done") { app.setDone(weight, reps) }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        TextLink(if (cur.done.isEmpty()) "דלג על התרגיל" else "לתרגיל הבא") { app.nextExercise() }
+        TextLink(if (cur.done.isEmpty()) "Skip this exercise" else "Next exercise") { app.nextExercise() }
     }
 }
 
 private fun verdict(d: Decision, def: ExerciseDef): String {
-    val what = if (def.equip == Equip.BODY) "${d.targetReps} חזרות" else "${kg(d.load)} ק״ג × ${d.targetReps}"
-    return if (d.action == Action.START) "בחר משקל התחלה" else "${actionText(d.action)}: $what"
+    val what = if (def.equip == Equip.BODY) "${d.targetReps} reps" else "${kg(d.load)} kg × ${d.targetReps}"
+    return if (d.action == Action.START) "Pick a starting weight" else "${actionText(d.action)}: $what"
 }
 
 @Composable
 private fun ColumnScope.Ask(app: AppLogic, ask: Phase.Ask, def: ExerciseDef) {
-    Text(if (def.equip == Equip.BODY) "${ask.reps} חזרות" else "${kg(ask.weight)} ק״ג × ${ask.reps}", color = Iron.Muted, style = Type.Small)
-    Text("איך היה?", style = Type.Title.copy(fontSize = 52.sp, lineHeight = 48.sp))
+    Text(if (def.equip == Equip.BODY) "${ask.reps} reps" else "${kg(ask.weight)} kg × ${ask.reps}", color = Iron.Muted, style = Type.Small)
+    Text("How was it?", style = Type.Title.copy(fontSize = 52.sp, lineHeight = 48.sp))
     Spacer(Modifier.weight(1f))
     for (feel in Feel.entries) {
         Raised(Modifier.fillMaxWidth().defaultMinSize(minHeight = 68.dp), onClick = { app.answer(feel) }) {
             Row(Modifier.align(Alignment.CenterStart), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 PlateDot(feel.color, size = 36.dp)
                 Column {
-                    Text(feel.he, style = Type.Strong.copy(fontSize = 18.sp))
+                    Text(feel.label, style = Type.Strong.copy(fontSize = 18.sp))
                     Text(feel.sub, color = Iron.Muted, style = Type.Small)
                 }
             }
         }
     }
     Spacer(Modifier.weight(1f))
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { TextLink("חזרה לתיקון המשקל או החזרות") { app.cancelAsk() } }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { TextLink("Back to fix the weight or reps") { app.cancelAsk() } }
 }
 
 @Composable
@@ -188,7 +188,7 @@ private fun ColumnScope.Rest(app: AppLogic, rest: Phase.Rest, cur: ActiveExercis
     val lastExercise = active != null && active.index >= active.exercises.size - 1
     val sec = ((left + 999) / 1000).toInt()
 
-    Text(if (left > 0) "מנוחה" else "אפשר להמשיך", color = Iron.Muted, style = Type.Small)
+    Text(if (left > 0) "Rest" else "Ready when you are", color = Iron.Muted, style = Type.Small)
     Spacer(Modifier.weight(1f))
     Box(Modifier.align(Alignment.CenterHorizontally).size(210.dp), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
@@ -200,24 +200,24 @@ private fun ColumnScope.Rest(app: AppLogic, rest: Phase.Rest, cur: ActiveExercis
         }
         Text("%d:%02d".format(sec / 60, sec % 60), style = Type.Title.copy(fontSize = 76.sp, lineHeight = 70.sp))
     }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { TextLink(ltr("+30") + " שניות") { app.addRest(30) } }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { TextLink("+30 seconds") { app.addRest(30) } }
     Spacer(Modifier.weight(1f))
     Well {
         if (!exerciseDone) {
             val d = remember(cur.done.size) { app.decision(cur) }
-            Text("הסט הבא: " + if (def.equip == Equip.BODY) "${d.targetReps} חזרות" else "${kg(d.load)} ק״ג × ${d.targetReps}", style = Type.Strong, color = Iron.Signal)
+            Text("Next set: " + if (def.equip == Equip.BODY) "${d.targetReps} reps" else "${kg(d.load)} kg × ${d.targetReps}", style = Type.Strong, color = Iron.Signal)
             Text(reasonText(d.reason, cur.repLo, d.repsToUnlock), style = Type.Small)
         } else if (!lastExercise && active != null) {
-            Text("התרגיל הבא: " + app.exercise(active.exercises[active.index + 1].exerciseId).name, style = Type.Strong, color = Iron.Signal)
-            Text("סיימת את כל הסטים של ${def.name}.", style = Type.Small)
+            Text("Next exercise: " + app.exercise(active.exercises[active.index + 1].exerciseId).name, style = Type.Strong, color = Iron.Signal)
+            Text("All sets of ${def.name} are done.", style = Type.Small)
         } else {
-            Text("זה היה התרגיל האחרון", style = Type.Strong, color = Iron.Signal)
-            Text("בסיכום תראה מה משתנה באימון הבא.", style = Type.Small)
+            Text("That was the last exercise", style = Type.Strong, color = Iron.Signal)
+            Text("The summary shows what changes next time.", style = Type.Small)
         }
     }
-    SteelButton(if (!exerciseDone) "לסט הבא" else if (lastExercise) "סיום אימון" else "לתרגיל הבא") { app.continueAfterRest() }
+    SteelButton(if (!exerciseDone) "Next set" else if (lastExercise) "Finish workout" else "Next exercise") { app.continueAfterRest() }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        if (exerciseDone) TextLink("עוד סט בתרגיל הזה") { app.extraSet() }
+        if (exerciseDone) TextLink("One more set of this exercise") { app.extraSet() }
     }
 }
 

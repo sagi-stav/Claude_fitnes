@@ -29,49 +29,49 @@ import com.odplata.engine.Feel
 import com.odplata.engine.Reason
 import java.time.LocalDate
 
-val Feel.he get() = when (this) { Feel.EASY -> "קל"; Feel.GOOD -> "בדיוק"; Feel.HARD -> "קשה"; Feel.FAIL -> "נתקעתי" }
+val Feel.label get() = when (this) { Feel.EASY -> "Easy"; Feel.GOOD -> "Just right"; Feel.HARD -> "Hard"; Feel.FAIL -> "Got stuck" }
 val Feel.sub get() = when (this) {
-    Feel.EASY -> "יכולתי עוד 4 חזרות ויותר"
-    Feel.GOOD -> "נשארו לי ${ltr("2–3")}"
-    Feel.HARD -> "נשארה אולי אחת"
-    Feel.FAIL -> "לא הצלחתי לסיים"
+    Feel.EASY -> "I had 4 or more reps left"
+    Feel.GOOD -> "I had 2–3 reps left"
+    Feel.HARD -> "Maybe one rep left"
+    Feel.FAIL -> "Could not finish the set"
 }
 val Feel.color get() = when (this) { Feel.EASY -> Iron.Green; Feel.GOOD -> Iron.Yellow; Feel.HARD -> Iron.Blue; Feel.FAIL -> Iron.Red }
 
 /** One short sentence explaining a decision, so the app never changes a load without saying why. */
 fun reasonText(reason: Reason, repLo: Int, unlock: Int?): String = when (reason) {
-    Reason.FIRST_TIME -> "תרגיל חדש. בחר משקל שנראה לך מתאים ל־$repLo חזרות, והאפליקציה תלמד ממנו."
-    Reason.READY_FOR_MORE -> "עמדת בחזרות עם רזרבה. מעלים צעד."
-    Reason.BUILD_REPS -> if (unlock != null) "נשארים ומוסיפים חזרות. $unlock חזרות בסט הראשון יפתחו את המשקל הבא." else "נשארים ומוסיפים חזרות."
-    Reason.BELOW_RANGE -> "החזרות ירדו מתחת לטווח. מורידים כדי לחזור אליו."
-    Reason.AFTER_FAIL -> "נתקעת באימון הקודם. מבססים לפני שמעלים."
-    Reason.LONG_BREAK -> "חזרה מהפסקה. מתחילים קל יותר ועולים מהר."
-    Reason.STALLED -> "כמה אימונים בלי התקדמות וקרוב לכשל. אימון קל כדי להתאושש."
-    Reason.EASY_NOW -> "היה קל ומעל הטווח. מעלים כבר עכשיו."
-    Reason.WEAK_DAY -> "היום קצת פחות חזק. מורידים כדי להישאר בטווח."
-    Reason.GRID_LIMIT -> "אין משקל אחר במכשיר הזה. מתקדמים בחזרות."
+    Reason.FIRST_TIME -> "New exercise. Pick a weight you think you can lift for $repLo reps and the app will learn from it."
+    Reason.READY_FOR_MORE -> "You hit the reps with room to spare. Going up one step."
+    Reason.BUILD_REPS -> if (unlock != null) "Stay here and add reps. $unlock reps on the first set unlocks the next weight." else "Stay here and add reps."
+    Reason.BELOW_RANGE -> "Reps fell below the range. Going down to get back into it."
+    Reason.AFTER_FAIL -> "You got stuck last session. Settle in before going up."
+    Reason.LONG_BREAK -> "Back from a break. Start lighter and climb back quickly."
+    Reason.STALLED -> "Several sessions near failure with no progress. A light session to recover."
+    Reason.EASY_NOW -> "That was easy and above the range. Going up right now."
+    Reason.WEAK_DAY -> "A weaker day. Going down to stay in the range."
+    Reason.GRID_LIMIT -> "No other weight exists on this equipment. Progress with reps."
 }
 
 fun actionText(action: Action): String = when (action) {
-    Action.START -> "מתחילים"
-    Action.HOLD -> "נשארים"
-    Action.UP -> "מעלים"
-    Action.DOWN -> "מורידים"
-    Action.DELOAD -> "אימון קל"
+    Action.START -> "Start"
+    Action.HOLD -> "Stay"
+    Action.UP -> "Go up"
+    Action.DOWN -> "Go down"
+    Action.DELOAD -> "Light session"
 }
 
-private val DAYS = listOf("ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת")
+private val MONTHS = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+private val DAYS = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 fun dayText(epochDay: Long): String {
     val d = LocalDate.ofEpochDay(epochDay)
-    return "יום ${DAYS[d.dayOfWeek.value % 7]}, ${d.dayOfMonth}.${d.monthValue}"
+    return "${DAYS[d.dayOfWeek.value % 7]} ${d.dayOfMonth} ${MONTHS[d.monthValue - 1]}"
 }
 
 fun agoText(days: Long?): String = when (days) {
-    null -> "עוד לא בוצע"
-    0L -> "היום"
-    1L -> "אתמול"
-    2L -> "לפני יומיים"
-    else -> "לפני $days ימים"
+    null -> "not done yet"
+    0L -> "today"
+    1L -> "yesterday"
+    else -> "$days days ago"
 }
 
 @Composable

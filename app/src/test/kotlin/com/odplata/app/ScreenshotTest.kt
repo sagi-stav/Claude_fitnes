@@ -57,9 +57,9 @@ class ScreenshotTest {
             ids.forEach { app.addToWorkout(id, app.exercise(it)) }
             app.back()
         }
-        build("חזה + יד אחורית", "Barbell_Bench_Press_-_Medium_Grip", "Incline_Dumbbell_Press", "Butterfly", "Triceps_Pushdown")
-        build("גב + יד קדמית", "Wide-Grip_Lat_Pulldown", "Seated_Cable_Rows", "Pullups", "Barbell_Curl")
-        build("רגליים + כתפיים", "Barbell_Squat", "Leg_Press", "Lying_Leg_Curls", "Side_Lateral_Raise")
+        build("Chest + Triceps", "Barbell_Bench_Press_-_Medium_Grip", "Incline_Dumbbell_Press", "Butterfly", "Triceps_Pushdown")
+        build("Back + Biceps", "Wide-Grip_Lat_Pulldown", "Seated_Cable_Rows", "Pullups", "Barbell_Curl")
+        build("Legs + Shoulders", "Barbell_Squat", "Leg_Press", "Lying_Leg_Curls", "Side_Lateral_Raise")
         val first = app.data.workouts.first().id
         val starts = listOf(60.0, 22.0, 40.0, 25.0)
         repeat(sessions) { n ->
@@ -91,9 +91,9 @@ class ScreenshotTest {
         val bench = app.data.states.getValue("Barbell_Bench_Press_-_Medium_Grip")
         assertTrue("bench estimate ${bench.strength}", bench.strength in 75.0..95.0)
         // The next workout in rotation is offered.
-        assertEquals("גב + יד קדמית", app.nextUp()?.name)
+        assertEquals("Back + Biceps", app.nextUp()?.name)
         // A custom exercise can be added and used.
-        val mine = app.addCustom("מכונת חזה כתומה", Equip.MACHINE, MuscleGroup.CHEST)
+        val mine = app.addCustom("Orange chest machine", Equip.MACHINE, MuscleGroup.CHEST)
         assertNotNull(app.exercises(MuscleGroup.CHEST).firstOrNull { it.id == mine.id })
         // An unfinished workout survives a restart.
         app.start(app.data.workouts[1].id)

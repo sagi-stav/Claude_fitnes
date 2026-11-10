@@ -25,7 +25,7 @@ import com.odplata.app.data.Equip
  */
 @Composable
 fun EquipIcon(equip: Equip, modifier: Modifier = Modifier, size: Dp = 28.dp, color: Color = Iron.Ink) {
-    Canvas(modifier.size(size).semantics { contentDescription = equip.he }) {
+    Canvas(modifier.size(size).semantics { contentDescription = equip.label }) {
         val u = this.size.minDimension / 24f
         val stroke = Stroke(1.8f * u, cap = StrokeCap.Round, join = StrokeJoin.Round)
         fun line(x1: Float, y1: Float, x2: Float, y2: Float) = drawLine(color, Offset(x1 * u, y1 * u), Offset(x2 * u, y2 * u), 1.8f * u, StrokeCap.Round)
@@ -139,7 +139,7 @@ fun MuscleMap(primary: List<String>, secondary: List<String> = emptyList(), modi
     val s = secondary.toSet()
     val back = p.any { it in BACK_ONLY } && p.none { it in FRONT_ONLY }
     val views = if (both) listOf(FRONT, BACK) else listOf(if (back) BACK else FRONT)
-    Canvas(modifier.size(width = height * 0.5f * views.size, height = height).semantics { contentDescription = "מפת שרירים" }) {
+    Canvas(modifier.size(width = height * 0.5f * views.size, height = height).semantics { contentDescription = "Muscle map" }) {
         val scale = size.height / 200f
         views.forEachIndexed { i, v -> figure(v, p, s, i * 100f * scale, scale) }
     }

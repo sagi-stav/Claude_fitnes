@@ -91,11 +91,11 @@ object Type {
     val Display = TextStyle(fontFamily = Karantina, fontSize = 30.sp, lineHeight = 30.sp, fontWeight = FontWeight.Bold)
 }
 
-/** Root of every screen: floor gradient, right-to-left layout and room for the system bars. */
+/** Root of every screen: floor gradient and room for the system bars. */
 @Composable
 fun IronScreen(content: @Composable ColumnScope.() -> Unit) {
     CompositionLocalProvider(
-        LocalLayoutDirection provides LayoutDirection.Rtl,
+        LocalLayoutDirection provides LayoutDirection.Ltr,
         LocalContentColor provides Iron.Ink,
         LocalTextStyle provides Type.Body,
     ) {
@@ -192,7 +192,7 @@ fun Well(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> U
 fun TopBar(left: String, right: String = "", onBack: (() -> Unit)? = null, action: (@Composable RowScope.() -> Unit)? = null) {
     Row(Modifier.fillMaxWidth().defaultMinSize(minHeight = 40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         if (onBack != null) {
-            Text("חזרה", Modifier.clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button, onClick = onBack).padding(horizontal = 6.dp, vertical = 10.dp), color = Iron.Muted, style = Type.Small)
+            Text("Back", Modifier.clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button, onClick = onBack).padding(horizontal = 6.dp, vertical = 10.dp), color = Iron.Muted, style = Type.Small)
         }
         Text(left, Modifier.weight(1f), color = Iron.Muted, style = Type.Small, maxLines = 1)
         if (right.isNotEmpty()) Text(right, color = Iron.Muted, style = Type.Small)
@@ -204,12 +204,6 @@ fun TopBar(left: String, right: String = "", onBack: (() -> Unit)? = null, actio
 fun TextLink(text: String, modifier: Modifier = Modifier, color: Color = Iron.Muted, onClick: () -> Unit) {
     Text(text, modifier.clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button, onClick = onClick).padding(horizontal = 8.dp, vertical = 12.dp), color = color, style = Type.Small.copy(fontWeight = FontWeight.Medium))
 }
-
-/**
- * Keeps a run such as "8–12", "+10" or "60×11" in left-to-right order inside Hebrew text;
- * without the isolate marks the bidi algorithm flips it to "12–8".
- */
-fun ltr(s: String): String = "\u2066$s\u2069"
 
 /** 62.5 -> "62.5", 60.0 -> "60". */
 fun kg(w: Double): String = if (w % 1.0 == 0.0) w.toInt().toString() else ((w * 100).toInt() / 100.0).toString()
