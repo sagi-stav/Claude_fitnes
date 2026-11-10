@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "OdPlata"
 include(":engine")
-//include(":app")
+include(":app")

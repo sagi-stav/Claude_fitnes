@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A 20 kg plate seen face-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#17191C" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#2460C8" android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
+    <path android:fillColor="#1A4A9C" android:pathData="M54,54m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0" />
+    <path android:fillColor="#C9CED5" android:pathData="M54,54m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0" />
+    <path android:fillColor="#17191C" android:pathData="M54,54m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0" />
+</vector>

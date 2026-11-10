@@ -82,8 +82,10 @@ data class ExerciseState(
     }
 }
 
+@kotlinx.serialization.Serializable
 enum class Action { START, HOLD, UP, DOWN, DELOAD }
 
+@kotlinx.serialization.Serializable
 enum class Reason {
     FIRST_TIME,
     /** Conservative estimate clears the bottom of the range at the next load. */
